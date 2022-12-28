@@ -1,0 +1,146 @@
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="/css/bdd.css">
+    <title>BDD Generator</title>
+</head>
+<body>
+    <h1>BDD Generator</h1>
+    <form>
+        <div name="cenario-1">
+            <table >
+                <tbody card-1 id="card_1">
+                    <tr>
+                        <th>Cenário</th>
+                        <td><input type="text" name="descricao"></td>
+                    </tr>
+                    <tr>
+                        <th>Dado</th>
+                        <td><input type="text" name="dado"></td>
+                    </tr>
+                    <tr>
+                        <th>Quando</th>
+                        <td><input type="text" name="quando"></td>
+                    </tr>
+                    <tr then-1>
+                        <th>Então</th>
+                        <td><input type="text" name="entao"></td>
+                    </tr>
+                </tbody>
+            </table>
+            <button type="button" cria-e-1 class="cria-e">E</button>
+        </div>
+        <div adiciona-cenario>
+            <button type="button" adiciona>Adionar cenário</button>
+            <button type="submit" id="enviar">Gerar Cypress</button>
+        </div>
+    </form>   
+    <script>
+        const adiciona = document.querySelector('[adiciona]')
+        let countCenario = 1
+
+        const addOnclickE = (and, then, card) => {
+            let i = 1
+            const criaE = document.querySelector(and)
+            criaE.onclick = () =>{
+                const entao = document.querySelector(then)
+                const tr = document.createElement('tr')
+                const th = document.createElement('th')
+                const td = document.createElement('td')
+                const input = document.createElement('input')
+                const span = document.createElement('span')
+                span.innerHTML = 'x'
+                th.innerHTML = 'E'
+                input.setAttribute('type', 'text')
+                input.setAttribute('name', `e_${i}`)
+                span.setAttribute('type', 'button')
+                span.onclick = function() {
+                    let pai = this.parentNode
+                    document.querySelector(card).removeChild(pai.parentNode)
+                    i--
+                }
+                td.appendChild(input)
+                th.appendChild(span)
+                tr.appendChild(th)
+                tr.appendChild(td)
+                if(i<6){
+                    entao.insertAdjacentElement('beforebegin', tr)
+                    i++
+                }  
+            }
+        }
+
+        adiciona.onclick = () => {
+            countCenario++
+            const adicionaCenario = document.querySelector('[adiciona-cenario]')
+            const novoCenario = `<div name="cenario-${countCenario}">
+                                    <span class="removeCenario">-</span>
+                                    <table >
+                                        <tbody card-${countCenario} card id="card_${countCenario}">
+                                            <tr>
+                                                <th>Cenário</th>
+                                                <td><input type="text" name="descricao"></td>
+                                            </tr>
+                                            <tr>
+                                                <th>Dado</th>
+                                                <td><input type="text" name="dado"></td>
+                                            </tr>
+                                            <tr>
+                                                <th>Quando</th>
+                                                <td><input type="text" name="quando"></td>
+                                            </tr>
+                                            <tr then-${countCenario}>
+                                                <th>Então</th>
+                                                <td><input type="text" name="entao"></td>
+                                            </tr>
+                                        </tbody>
+                                    </table>
+                                    <button type="button" cria-e-${countCenario} class="cria-e">E</button>
+                                </div>`
+            let doc = new DOMParser().parseFromString(novoCenario, "text/html");
+            const span = doc.querySelector('.removeCenario')
+            span.onclick = function() {
+                let pai = this.parentNode
+                document.querySelector('form').removeChild(pai)
+            }
+            const div = doc.querySelector('div')
+            adicionaCenario.insertAdjacentElement('beforebegin', div)
+            addOnclickE(`[cria-e-${countCenario}]`, `[then-${countCenario}]`, `[card-${countCenario}]`)
+        }
+
+        document.querySelector('form').addEventListener('submit', function(event) {
+            event.preventDefault(); 
+            let formData = {}
+            let tbodys = document.querySelectorAll('tbody')
+            for(let tbody of tbodys){
+                let inputs = document.querySelectorAll(`#${tbody.id} input`)
+                let obj = {}
+                for(let input of inputs){
+                    obj[input.name] = input.value
+                }
+                formData[tbody.id] = obj
+            }
+            if(formData){
+                fetch('/addCenario', {
+                    method: 'POST',
+                    body: JSON.stringify(formData),
+                    headers: {
+                        "Content-Type": "application/json"
+                    }
+                }).then((resposta) => {
+                    if(resposta.status === 200){
+                        window.location.href = 'http://localhost:3003/sucesso'
+                    }
+                })
+            }
+
+        })
+
+
+        addOnclickE('[cria-e-1]', '[then-1]', '[card-1]')
+    </script> 
+</body>
+</html>
+
