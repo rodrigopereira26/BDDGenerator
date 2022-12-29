@@ -34,6 +34,13 @@ function geraArquivo(objs){
     let arquivo = today.toISOString().substring(0,19)
     arquivo = `${arquivo.replace(':', '-')}.cy.js`
     arquivo = arquivo.replace(':', '-')
+
+    //Verifica se não existe
+    if (!fs.existsSync('arquivos')){
+        //Efetua a criação do diretório
+        fs.mkdirSync('arquivos')
+    }
+
     // Grava o arquivo
     fs.writeFile(`arquivos/${arquivo}`, card, (err) => {
         if (err) return false
