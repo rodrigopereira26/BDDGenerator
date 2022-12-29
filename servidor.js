@@ -1,22 +1,13 @@
 const geradorCypress = require('./geradorCypress')
-
 const cors = require('cors')
-
 const porta = 3003
-
-const path = require('path')
 const bodyParser = require('body-parser')
 const express = require('express')
-const ejs = require('ejs')
 const app = express()
 
 app.use(cors({
     origin: '*'
 }))
-
-// app.engine('ejs', ejs.renderFile)
-// app.set('view engine', 'ejs')
-// app.set('views', path.join(__dirname, 'views'))
 
 app.use(bodyParser.json())
 
@@ -44,6 +35,8 @@ app.post('/addCenario', (req, res, next) => {
   let retorno =  geradorCypress.geraArquivo(req.body)
   if(retorno){  
     res.status(200).send('ok')
+  } else {
+    res.status(500).send('nok')
   }
   
 })

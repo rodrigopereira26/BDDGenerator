@@ -41,6 +41,7 @@
         const adiciona = document.querySelector('[adiciona]')
         let countCenario = 1
 
+        // Função para criar nova linha na tabela onde será incluido os dados do E
         const addOnclickE = (and, then, card) => {
             let i = 1
             const criaE = document.querySelector(and)
@@ -56,6 +57,7 @@
                 input.setAttribute('type', 'text')
                 input.setAttribute('name', `e_${i}`)
                 span.setAttribute('type', 'button')
+                // Função para deleção do E
                 span.onclick = function() {
                     let pai = this.parentNode
                     document.querySelector(card).removeChild(pai.parentNode)
@@ -72,6 +74,7 @@
             }
         }
 
+        // Função para adição de novo cenário no formulário
         adiciona.onclick = () => {
             countCenario++
             const adicionaCenario = document.querySelector('[adiciona-cenario]')
@@ -99,8 +102,9 @@
                                     </table>
                                     <button type="button" cria-e-${countCenario} class="cria-e">E</button>
                                 </div>`
-            let doc = new DOMParser().parseFromString(novoCenario, "text/html");
+            let doc = new DOMParser().parseFromString(novoCenario, "text/html")
             const span = doc.querySelector('.removeCenario')
+            // Função para deleção de novo cenário
             span.onclick = function() {
                 let pai = this.parentNode
                 document.querySelector('form').removeChild(pai)
@@ -109,7 +113,8 @@
             adicionaCenario.insertAdjacentElement('beforebegin', div)
             addOnclickE(`[cria-e-${countCenario}]`, `[then-${countCenario}]`, `[card-${countCenario}]`)
         }
-
+        
+        //Função para agrupar os dados do formulário e enviar para api
         document.querySelector('form').addEventListener('submit', function(event) {
             event.preventDefault(); 
             let formData = {}
@@ -132,12 +137,19 @@
                 }).then((resposta) => {
                     if(resposta.status === 200){
                         window.location.href = 'http://localhost:3003/sucesso'
+                    } else {
+                        const elemento = '<div><p id="msg-erro">Erro ao tentar gerar arquivo!</p></div>'
+                        const doc = new DOMParser().parseFromString(elemento, "text/html")
+                        const msgErro = doc.querySelector('div')
+                        document.querySelector('[adiciona-cenario]').insertAdjacentElement('afterend', msgErro)
+                        setTimeout(() => {
+                            msgErro.parentNode.removeChild(msgErro)
+                        }, 3000)
                     }
                 })
             }
 
         })
-
 
         addOnclickE('[cria-e-1]', '[then-1]', '[card-1]')
     </script> 

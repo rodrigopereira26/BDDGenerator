@@ -98,3 +98,8 @@ span{
     border: 1px solid #fff;
     cursor:pointer;
 }
+
+#msg-erro{
+    color: rgb(254, 25, 71);
+    font-family: 'Ubuntu-Regular';
+}
